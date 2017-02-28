@@ -3,8 +3,8 @@
   <groupId>sondow</groupId>
   <artifactId>lambda-twitter-base</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>lambda-twitter-base</name>
-  <description>Uses AWS Lambda to automate twitter tasks.</description>
+  <name>meadow</name>
+  <description>Uses AWS Lambda to automate pretty emoji meadow tweets.</description>
   <dependencies>
   	<dependency>
   		<groupId>com.amazonaws</groupId>
