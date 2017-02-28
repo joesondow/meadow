@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>sondow</groupId>
   <artifactId>meadow</artifactId>
-  <name>lambda-twitter-base</name>
-  <version>0.0.1-SNAPSHOT</version>
+  <name>meadow</name>
+  <version>1.0.0</version>
   <description>Uses AWS Lambda to automate pretty emoji meadow tweets.</description>
 </project>
 
