@@ -8,6 +8,11 @@ package sondow.meadow;
 public class Grid {
 
     private String[][] table;
+    private String init;
+
+    public String getInit() {
+        return init;
+    }
 
     /**
      * Creates a grid of cells based on the specified dimensions, with a starting value in every cell.
@@ -17,6 +22,7 @@ public class Grid {
      * @param init the initial value to put in every cell
      */
     Grid(int rows, int cols, String init) {
+        this.init = init;
         table = new String[rows][cols];
         for (int r = 0; r < table.length; r++) {
             String[] row = table[r];

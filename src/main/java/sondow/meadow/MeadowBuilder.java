@@ -10,34 +10,52 @@ public class MeadowBuilder {
      */
     Randomizer random;
 
+    public static final int ROW_COUNT = 7;
+    public static final int COL_COUNT = 9;
+
     MeadowBuilder() {
         random = new Randomizer();
     }
 
     public static void main(String[] args) {
         MeadowBuilder b = new MeadowBuilder();
-        b.build();
+        String meadow = b.build();
+        System.out.println(meadow);
     }
 
     public String build() {
-        int rowCount = 7;
-        int colCount = 9;
-        String baseGrassType = random.oneOf(Chars.GRASS_TYPE);
-        Grid grid = new Grid(rowCount, colCount, baseGrassType);
+        Grid grid = initializeGrid();
+        int algorithmPick = random.nextInt(10);
+        if (algorithmPick == 3) {
+            return pathThroughTheField(grid);
+        }
+        return randomGrassMaybeFlowersMaybeOneAnimal(grid);
+    }
 
+    private Grid initializeGrid() {
+        String baseGrassType = random.oneOf(Chars.GRASS_TYPE);
+        Grid grid = new Grid(ROW_COUNT, COL_COUNT, baseGrassType);
+        return grid;
+    }
+
+    private String pathThroughTheField(Grid grid) {
+        return randomGrassMaybeFlowersMaybeOneAnimal(grid);
+    }
+
+    private String randomGrassMaybeFlowersMaybeOneAnimal(Grid grid) {
         List<String> otherGrassTypes = new ArrayList<String>();
         int otherGrassTypeCount = random.nextInt(Chars.GRASS_TYPE.size() - 1);
         while (otherGrassTypes.size() < otherGrassTypeCount) {
             String otherGrassType = random.oneOf(Chars.GRASS_TYPE);
-            if (!otherGrassType.equals(baseGrassType) && !otherGrassTypes.contains(otherGrassType)) {
+            if (!otherGrassType.equals(grid.getInit()) && !otherGrassTypes.contains(otherGrassType)) {
                 otherGrassTypes.add(otherGrassType);
             }
         }
         for (String grassType : otherGrassTypes) {
-            int otherGrassCount = random.nextInt((int) Math.round(rowCount * colCount * 0.8));
+            int otherGrassCount = random.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.8));
             for (int i = 0; i < otherGrassCount; i++) {
-                int row = random.nextInt(rowCount);
-                int col = random.nextInt(colCount);
+                int row = random.nextInt(ROW_COUNT);
+                int col = random.nextInt(COL_COUNT);
                 grid.put(row, col, grassType);
             }
         }
@@ -51,17 +69,17 @@ public class MeadowBuilder {
             }
         }
         for (String flowerType : flowerTypes) {
-            int flowerCount = random.nextInt((int) Math.round(rowCount * colCount * 0.3));
+            int flowerCount = random.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.3));
             for (int i = 0; i < flowerCount; i++) {
-                int row = random.nextInt(rowCount);
-                int col = random.nextInt(colCount);
+                int row = random.nextInt(ROW_COUNT);
+                int col = random.nextInt(COL_COUNT);
                 grid.put(row, col, flowerType);
             }
         }
 
         if (random.nextInt(2) == 0) {
-            int animalRow = random.nextInt(rowCount - 2) + 1;
-            int animalCol = random.nextInt(colCount - 2) + 1;
+            int animalRow = random.nextInt(ROW_COUNT - 2) + 1;
+            int animalCol = random.nextInt(COL_COUNT - 2) + 1;
             String animalType = random.oneOf(Chars.ANIMAL_TYPES);
             grid.put(animalRow, animalCol, animalType);
         }
