@@ -22,11 +22,11 @@ public class GridTest {
     @Test
     public void testCreateGetPutAndToString() {
         assertEquals("MMMM\nMMMM\nMMMM", grid.toString());
-        assertEquals("M", grid.get(1, 0));
+        assertEquals("M", grid.getCellContents(1, 0));
         grid.put(1, 0, "P");
         grid.put(2, 3, "Q");
-        assertEquals("P", grid.get(1, 0));
-        assertEquals("M", grid.get(1, 1));
+        assertEquals("P", grid.getCellContents(1, 0));
+        assertEquals("M", grid.getCellContents(1, 1));
         assertEquals("MMMM\nPMMM\nMMMQ", grid.toString());
     }
 
