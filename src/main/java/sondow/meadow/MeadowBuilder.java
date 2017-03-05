@@ -24,13 +24,11 @@ public class MeadowBuilder {
     }
 
     public String build() {
-
-        int algorithmPick = random.nextInt(10);
-        if (algorithmPick == 3) {
-            return randomGrassMaybeFlowersMaybeOneAnimal();
+        int algorithmPick = random.nextInt(3);
+        if (algorithmPick == 1) {
+            return pathThroughTheField();
         }
-        // return randomGrassMaybeFlowersMaybeOneAnimal(grid);
-        return pathThroughTheField();
+        return randomGrassMaybeFlowersMaybeOneAnimal();
     }
 
     private Grid initializeGrid(String base) {
@@ -65,12 +63,10 @@ public class MeadowBuilder {
                 List<Cell> neighborsOfCandidate = grid.getOrthogonalNeighborsOf(candidateCell);
                 if (neighborsOfCandidate.size() >= 3) {
                     for (Cell neighbor : neighborsOfCandidate) {
-
                         // If candidate's neighbors are already on path, then candidate is not path-worthy.
                         if (!path.contains(neighbor)) {
                             neighborsOffPath++;
                         }
-
                     }
                 }
                 if (neighborsOffPath >= 3) {
@@ -93,7 +89,7 @@ public class MeadowBuilder {
         Grid grid = initializeGrid(baseFlowerType);
 
         List<Cell> path = new ArrayList<Cell>();
-        while (path.size() < 20) {
+        while (path.size() < 17) {
             path = generatePath(grid);
         }
         List<String> animals = new ArrayList<String>(Chars.ANIMALS_TO_TREATS.keySet());
@@ -120,7 +116,17 @@ public class MeadowBuilder {
                 int col = random.nextInt(COL_COUNT);
                 Cell cell = new Cell(row, col, grid.getCellContents(row, col));
                 if (!path.contains(cell)) {
-                    grid.put(row, col, flowerType);
+                    // Are any neighbors of the cell on the path? Keep weird flowers away from the path.
+                    List<Cell> neighbors = grid.getAllNeighborsOf(cell);
+                    boolean neighborIsOnPath = false;
+                    for (Cell neighbor : neighbors) {
+                        if (path.contains(neighbor)) {
+                            neighborIsOnPath = true;
+                        }
+                    }
+                    if (neighborIsOnPath == false) {
+                        grid.put(row, col, flowerType);
+                    }
                 }
             }
         }

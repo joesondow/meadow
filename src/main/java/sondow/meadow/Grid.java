@@ -75,7 +75,7 @@ public class Grid {
         return neighbors;
     }
 
-    public List<Cell> getAllNeighborsOfCell(Cell cell) {
+    public List<Cell> getAllNeighborsOf(Cell cell) {
         List<Cell> neighbors = getOrthogonalNeighborsOf(cell);
         int row = cell.getRow();
         int col = cell.getCol();
