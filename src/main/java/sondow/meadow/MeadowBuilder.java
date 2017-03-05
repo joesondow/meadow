@@ -109,25 +109,36 @@ public class MeadowBuilder {
         }
 
         List<String> flowerTypes = chooseSomeRandomFlowerTypes();
-        for (String flowerType : flowerTypes) {
-            int flowerCount = random.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.3));
-            for (int i = 0; i < flowerCount; i++) {
-                int row = random.nextInt(ROW_COUNT);
-                int col = random.nextInt(COL_COUNT);
-                Cell cell = new Cell(row, col, grid.getCellContents(row, col));
-                if (!path.contains(cell)) {
-                    // Are any neighbors of the cell on the path? Keep weird flowers away from the path.
+
+        // Find all the cells that are not on or adjacent to the path.
+        List<Cell> farFromPath = new ArrayList<Cell>();
+        for (int r = 0; r < ROW_COUNT; r++) {
+            for (int c = 0; c < COL_COUNT; c++) {
+                boolean cellIsOnOrNearPath = false;
+                Cell cell = new Cell(r, c, grid.getCellContents(r, c));
+                if (path.contains(cell)) {
+                    cellIsOnOrNearPath = true;
+                } else {
                     List<Cell> neighbors = grid.getAllNeighborsOf(cell);
-                    boolean neighborIsOnPath = false;
-                    for (Cell neighbor : neighbors) {
-                        if (path.contains(neighbor)) {
-                            neighborIsOnPath = true;
+                    for (Cell n : neighbors) {
+                        if (path.contains(n)) {
+                            cellIsOnOrNearPath = true;
+                            break;
                         }
                     }
-                    if (neighborIsOnPath == false) {
-                        grid.put(row, col, flowerType);
-                    }
                 }
+                if (!cellIsOnOrNearPath) {
+                    farFromPath.add(cell);
+                }
+            }
+        }
+
+        for (String flowerType : flowerTypes) {
+            int flowerCount = random.nextInt(farFromPath.size() + 1);
+            for (int i = 0; i < flowerCount; i++) {
+                Cell cell = random.oneOf(farFromPath);
+                cell.setContents(flowerType);
+                grid.put(cell);
             }
         }
 
