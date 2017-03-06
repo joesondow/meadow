@@ -24,7 +24,7 @@ public class MeadowBuilder {
     }
 
     public String build() {
-        int algorithmPick = random.nextInt(3);
+        int algorithmPick = random.nextInt(7);
         if (algorithmPick == 1) {
             return pathThroughTheField();
         }
