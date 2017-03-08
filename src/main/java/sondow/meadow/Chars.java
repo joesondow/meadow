@@ -38,5 +38,5 @@ public class Chars {
         }
     };
 
-    public static final List<String> PATH_TYPES = Arrays.asList("▫️", "🌱");
+    public static final List<String> PATH_TYPES = Arrays.asList("🌱");
 }
