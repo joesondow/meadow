@@ -53,23 +53,6 @@ public class MeadowBuilderTest {
     }
 
     @Test
-    public final void testBuildPathThroughTheMeadowWhereTreatTouchesEarlyPathCorner() {
-        Random random = new Random(43L);
-        MeadowBuilder builder = new MeadowBuilder(random);
-        String meadow = builder.build();
-        String expected = "" +
-                "🍄🍄🍄🍄🍄🍄🍄🍄🍄\n" +
-                "🍄🌱🌱🌱🌱🌱🍄🍄🍄\n" +
-                "🍄🌱🍄🍄🍄🌱🌱🌱🍄\n" +
-                "🍄🌱🍄🍄🍌🍄🍄🌱🍄\n" +
-                "🍄🌱🍄🌱🌱🍄🍄🌱🐒\n" +
-                "🍄🌱🌱🌱🍄🍄🍄🍄🍄\n" +
-                "🍄🍄🍄🍄🍄🍄🍄🍄🍄";
-
-        assertEquals(expected, meadow);
-    }
-
-    @Test
     public final void testBuildPathThroughTheMeadowMonkeyBananaNoCornerNicks() {
         Random random = new Random(74L);
         MeadowBuilder builder = new MeadowBuilder(random);
@@ -87,18 +70,18 @@ public class MeadowBuilderTest {
     }
 
     @Test
-    public final void testBuildPathThroughTheMeadowWhereEarlyPathNicksCornerOfLaterPath() {
+    public final void testBuildPathThroughTheMeadowMouseCheeseNoCornerNicks() {
         Random random = new Random(206L);
         MeadowBuilder builder = new MeadowBuilder(random);
         String meadow = builder.build();
         String expected = "" +
                 "🌺🌺🌺🌺🌺🌺🌺🌺🌺\n" +
                 "🌺🌱🌱🌱🌱🌱🌱🌱🌺\n" +
-                "🌺🌱🌺🌺🌺🌺🌺🌱🐒\n" +
-                "🌺🌱🌺🌱🌱🌱🌱🌺🌺\n" +
-                "🌺🌱🌺🌱🌺🌺🌱🌱🌺\n" +
-                "🌺🌱🌱🌱🌺🌺🌺🍌🌺\n" +
-                "🌺🌺🌺🌺🌺🌼🌺🌺🌺";
+                "🌺🌱🌺🌺🌺🌺🌺🌱🐁\n" +
+                "🌺🌱🌺🌱🌱🌱🌺🌺🌺\n" +
+                "🌺🌱🌺🌱🌺🌱🌺🧀🌺\n" +
+                "🌺🌱🌱🌱🌺🌱🌱🌱🌺\n" +
+                "🌺🌺🌺🌺🌺🌺🌺🌺🌺";
 
         assertEquals(expected, meadow);
     }

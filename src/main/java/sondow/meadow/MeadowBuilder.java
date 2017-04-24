@@ -19,14 +19,21 @@ public class MeadowBuilder {
     }
 
     public static void main(String[] args) {
-        MeadowBuilder b = new MeadowBuilder(new Random());
-        String meadow = b.build();
-        System.out.println(meadow);
+        for (long i = 0L; i < 500L; i++) {
+            MeadowBuilder b = new MeadowBuilder(new Random());
+            String meadow = b.build();
+            if (b.isPath) {
+                System.out.println(meadow + "\n\n" + i + "\n\n\n\n");
+            }
+        }
     }
+
+    public boolean isPath = false;
 
     public String build() {
         int algorithmPick = randomizer.nextInt(7);
         if (algorithmPick == 1) {
+            isPath = true;
             return pathThroughTheField();
         }
         return randomGrassMaybeFlowersMaybeOneAnimal();
@@ -60,18 +67,27 @@ public class MeadowBuilder {
             List<Cell> candidates = grid.getOrthogonalNeighborsOf(cursor);
             List<Cell> worthyCandidates = new ArrayList<Cell>();
             for (Cell candidateCell : candidates) {
-                int neighborsOffPath = 0;
-                List<Cell> neighborsOfCandidate = grid.getOrthogonalNeighborsOf(candidateCell);
-                if (neighborsOfCandidate.size() >= 3) {
-                    for (Cell neighbor : neighborsOfCandidate) {
-                        // If candidate's neighbors are already on path, then candidate is not path-worthy.
-                        if (!path.contains(neighbor)) {
-                            neighborsOffPath++;
-                        }
+                List<Cell> neighborsOfCandidate = grid.getAllNeighborsOf(candidateCell);
+                List<Cell> neighborsOnPath = new ArrayList<Cell>();
+                for (Cell neighbor : neighborsOfCandidate) {
+                    // If candidate's neighbors are already on path, then candidate is not path-worthy.
+                    if (path.contains(neighbor)) {
+                        neighborsOnPath.add(neighbor);
                     }
                 }
-                if (neighborsOffPath >= 3) {
-                    worthyCandidates.add(candidateCell);
+                if (!grid.isEdgeCell(candidateCell)) {
+                    if (neighborsOnPath.size() <= 1) {
+                        worthyCandidates.add(candidateCell);
+                    } else if (neighborsOnPath.size() == 2) {
+                        // If there are two neighbors on the path, then this cell is still worthy iff those
+                        // neighbors are adjacent to each other, indicating that they're both earlier cells on
+                        // the path.
+                        Cell neighborA = neighborsOnPath.get(0);
+                        Cell neighborB = neighborsOnPath.get(1);
+                        if (grid.getOrthogonalNeighborsOf(neighborA).contains(neighborB)) {
+                            worthyCandidates.add(candidateCell);
+                        }
+                    }
                 }
             }
             if (worthyCandidates.size() > 0) {

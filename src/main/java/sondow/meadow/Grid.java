@@ -37,6 +37,12 @@ public class Grid {
         }
     }
 
+    public boolean isEdgeCell(Cell cell) {
+        int row = cell.getRow();
+        int col = cell.getCol();
+        return row == 0 || col == 0 || row == table.length - 1 || col == table[0].length - 1;
+    }
+
     public List<Cell> getOrthogonalNeighborsOf(Cell cell) {
         int row = cell.getRow();
         int col = cell.getCol();
@@ -159,6 +165,17 @@ public class Grid {
      */
     public String getCellContents(int row, int col) {
         return table[row][col];
+    }
+
+    /**
+     * Gets a cell from the grid at specific coordinates.
+     *
+     * @param row the zero-indexed row number
+     * @param col the zero-indexed column number
+     * @return the specified grid cell
+     */
+    public Cell getCell(int row, int col) {
+        return new Cell(row, col, getCellContents(row, col));
     }
 
 }
