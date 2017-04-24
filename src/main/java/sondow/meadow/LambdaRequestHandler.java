@@ -1,5 +1,12 @@
 package sondow.meadow;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.Base64;
+
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
+import com.amazonaws.services.kms.model.DecryptRequest;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
@@ -29,39 +36,42 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
 
     /**
      * AWS Lambda only allows underscores in environment variables, not dots, so the default ways twitter4j finds
-     * keys aren't possible. Instead, write your own code that gets the configuration either from Lambda-friendly
-     * environment variables or from a default twitter4j.properties file at the project root, or on the
-     * classpath, or in WEB-INF.
+     * keys aren't possible. Instead, this custom code gets the configuration either from Lambda-friendly
+     * environment variables or else allows Twitter4J to look in its default locations like twitter4j.properties
+     * file at the project root, or on the classpath, or in WEB-INF.
+     *
+     * Twitter API keys are sensitive, so they should be encrypted with the AWS KMS console helper tools and
+     * decrypted here using KMS. If you choose to use environment variables without encryption, add the env var
+     * "encryption=off"
      *
      * @return configuration containing Twitter authentication strings
      */
     private Configuration configure() {
 
-        // AWS Lambda only allows underscores in environment variables, not dots, so the default ways twitter4j
-        // finds keys aren't possible. Instead, write your own code that gets the configuration either from
-        // Lambda-friendly environment variables. If those variables are missing, default to using the regular
-        // twitter4j algorithm of getting keys from a default twitter4j.properties file at the project root,
-        // or on the classpath, or in WEB-INF.
         ConfigurationBuilder cb = new ConfigurationBuilder();
 
+        // By default, assume sensitive env vars are encrypted with AWS KMS helpers. To use unencrypted sensitive
+        // env vars, add the encryption=off env var.
+        boolean encryptionOn = !"off".equals(System.getenv("encryption"));
+
         // If just one set of keys is provided in environment variables, use that key set.
-        String consumerKey = System.getenv("twitter4j_oauth_consumerKey");
-        String consumerSecret = System.getenv("twitter4j_oauth_consumerSecret");
-        String accessToken = System.getenv("twitter4j_oauth_accessToken");
-        String accessTokenSecret = System.getenv("twitter4j_oauth_accessTokenSecret");
+        String consumerKey = getEnvVar("twitter4j_oauth_consumerKey", encryptionOn);
+        String consumerSecret = getEnvVar("twitter4j_oauth_consumerSecret", encryptionOn);
+        String accessToken = getEnvVar("twitter4j_oauth_accessToken", encryptionOn);
+        String accessTokenSecret = getEnvVar("twitter4j_oauth_accessTokenSecret", encryptionOn);
 
         // Override with a specific account if available. This mechanism allows us to provide multiple key sets
         // in the AWS Lambda configuration, and switch which Twitter account to target by retyping just the
-        // account name in the configuration.
+        // target Twitter account name in the configuration.
         String account = System.getenv("twitter_account");
         if (account != null) {
-            String specificConsumerKey = System.getenv(account + "_twitter4j_oauth_consumerKey");
+            String specificConsumerKey = getEnvVar(account + "_twitter4j_oauth_consumerKey", encryptionOn);
             consumerKey = (specificConsumerKey != null) ? specificConsumerKey : consumerKey;
-            String specificConsumerSecret = System.getenv(account + "_twitter4j_oauth_consumerSecret");
+            String specificConsumerSecret = getEnvVar(account + "_twitter4j_oauth_consumerSecret", encryptionOn);
             consumerSecret = (specificConsumerSecret != null) ? specificConsumerSecret : consumerSecret;
-            String specificAccessToken = System.getenv(account + "_twitter4j_oauth_accessToken");
+            String specificAccessToken = getEnvVar(account + "_twitter4j_oauth_accessToken", encryptionOn);
             accessToken = (specificAccessToken != null) ? specificAccessToken : accessToken;
-            String specificAccTokSecret = System.getenv(account + "_twitter4j_oauth_accessTokenSecret");
+            String specificAccTokSecret = getEnvVar(account + "_twitter4j_oauth_accessTokenSecret", encryptionOn);
             accessTokenSecret = (specificAccTokSecret != null) ? specificAccTokSecret : accessTokenSecret;
         }
         if (consumerKey != null) {
@@ -79,5 +89,31 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
         Configuration config = cb.setTrimUserEnabled(true).build();
 
         return config;
+    }
+
+    private String getEnvVar(String envVarKey, boolean decryptValue) {
+        String result = null;
+        final String rawValue = System.getenv(envVarKey);
+        if (decryptValue && rawValue != null) {
+            byte[] encryptedValue = Base64.getDecoder().decode(rawValue);
+            String region = System.getenv("AWS_DEFAULT_REGION");
+            AWSKMS client = AWSKMSClientBuilder.standard().withRegion(region).build();
+            DecryptRequest request = new DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptedValue));
+            ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
+            result = new String(plainTextKey.array(), Charset.forName("UTF-8"));
+        } else {
+            result = rawValue;
+        }
+        return result;
+    }
+
+    /**
+     * Local manual testing. This requires setting up all the necessary environment variables in your local dev
+     * environment for this execution. Note that Eclipse runtime configuration is separate from command line env
+     * var setup.
+     */
+    public static void main(String[] args) {
+        LambdaRequestHandler handler = new LambdaRequestHandler();
+        handler.handleRequest(null, null);
     }
 }
