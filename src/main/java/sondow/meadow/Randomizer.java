@@ -1,6 +1,5 @@
 package sondow.meadow;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -11,7 +10,11 @@ import java.util.Random;
  */
 public class Randomizer {
 
-    Random random = new Random();
+    Random random;
+
+    public Randomizer(Random random) {
+        this.random = random;
+    }
 
     public int nextInt(int bound) {
         return random.nextInt(bound);
@@ -19,9 +22,5 @@ public class Randomizer {
 
     public <T> T oneOf(List<T> things) {
         return things.get(nextInt(things.size()));
-    }
-
-    public void shuffle(List<String> list) {
-        Collections.shuffle(list);
     }
 }

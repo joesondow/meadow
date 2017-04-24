@@ -2,29 +2,30 @@ package sondow.meadow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MeadowBuilder {
 
     /**
      * Custom randomizer wrapper class allows for deterministic unit tests.
      */
-    Randomizer random;
+    Randomizer randomizer;
 
     public static final int ROW_COUNT = 7;
     public static final int COL_COUNT = 9;
 
-    MeadowBuilder() {
-        random = new Randomizer();
+    MeadowBuilder(Random random) {
+        randomizer = new Randomizer(random);
     }
 
     public static void main(String[] args) {
-        MeadowBuilder b = new MeadowBuilder();
+        MeadowBuilder b = new MeadowBuilder(new Random());
         String meadow = b.build();
         System.out.println(meadow);
     }
 
     public String build() {
-        int algorithmPick = random.nextInt(7);
+        int algorithmPick = randomizer.nextInt(7);
         if (algorithmPick == 1) {
             return pathThroughTheField();
         }
@@ -41,7 +42,7 @@ public class MeadowBuilder {
         List<Cell> path = new ArrayList<Cell>();
 
         // Start on the right, because emoji animals face left. Don't start on the top or bottom row.
-        int startCellRowIndex = random.nextInt(ROW_COUNT - 2) + 1;
+        int startCellRowIndex = randomizer.nextInt(ROW_COUNT - 2) + 1;
         int startCellColIndex = COL_COUNT - 1;
 
         // First cell is path start. Animal will go there after path is fully calculated.
@@ -74,7 +75,7 @@ public class MeadowBuilder {
                 }
             }
             if (worthyCandidates.size() > 0) {
-                Cell nextPathCell = random.oneOf(worthyCandidates);
+                Cell nextPathCell = randomizer.oneOf(worthyCandidates);
                 path.add(nextPathCell);
                 cursor = nextPathCell;
             } else {
@@ -85,7 +86,7 @@ public class MeadowBuilder {
     }
 
     private String pathThroughTheField() {
-        String baseFlowerType = random.oneOf(Chars.FLOWER_TYPES);
+        String baseFlowerType = randomizer.oneOf(Chars.FLOWER_TYPES);
         Grid grid = initializeGrid(baseFlowerType);
 
         List<Cell> path = new ArrayList<Cell>();
@@ -93,8 +94,8 @@ public class MeadowBuilder {
             path = generatePath(grid);
         }
         List<String> animals = new ArrayList<String>(Chars.ANIMALS_TO_TREATS.keySet());
-        String animal = random.oneOf(animals);
-        String pathType = random.oneOf(Chars.PATH_TYPES);
+        String animal = randomizer.oneOf(animals);
+        String pathType = randomizer.oneOf(Chars.PATH_TYPES);
         for (int i = 0; i < path.size(); i++) {
             Cell cell = path.get(i);
             if (i == path.size() - 1) {
@@ -134,9 +135,9 @@ public class MeadowBuilder {
         }
 
         for (String flowerType : flowerTypes) {
-            int flowerCount = random.nextInt(farFromPath.size() + 1);
+            int flowerCount = randomizer.nextInt(farFromPath.size() + 1);
             for (int i = 0; i < flowerCount; i++) {
-                Cell cell = random.oneOf(farFromPath);
+                Cell cell = randomizer.oneOf(farFromPath);
                 cell.setContents(flowerType);
                 grid.put(cell);
             }
@@ -146,39 +147,39 @@ public class MeadowBuilder {
     }
 
     private String randomGrassMaybeFlowersMaybeOneAnimal() {
-        String baseGrassType = random.oneOf(Chars.GRASS_TYPE);
+        String baseGrassType = randomizer.oneOf(Chars.GRASS_TYPE);
         Grid grid = initializeGrid(baseGrassType);
         List<String> otherGrassTypes = new ArrayList<String>();
-        int otherGrassTypeCount = random.nextInt(Chars.GRASS_TYPE.size() - 1);
+        int otherGrassTypeCount = randomizer.nextInt(Chars.GRASS_TYPE.size() - 1);
         while (otherGrassTypes.size() < otherGrassTypeCount) {
-            String otherGrassType = random.oneOf(Chars.GRASS_TYPE);
+            String otherGrassType = randomizer.oneOf(Chars.GRASS_TYPE);
             if (!otherGrassType.equals(grid.getInit()) && !otherGrassTypes.contains(otherGrassType)) {
                 otherGrassTypes.add(otherGrassType);
             }
         }
         for (String grassType : otherGrassTypes) {
-            int otherGrassCount = random.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.8));
+            int otherGrassCount = randomizer.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.8));
             for (int i = 0; i < otherGrassCount; i++) {
-                int row = random.nextInt(ROW_COUNT);
-                int col = random.nextInt(COL_COUNT);
+                int row = randomizer.nextInt(ROW_COUNT);
+                int col = randomizer.nextInt(COL_COUNT);
                 grid.put(row, col, grassType);
             }
         }
 
         List<String> flowerTypes = chooseSomeRandomFlowerTypes();
         for (String flowerType : flowerTypes) {
-            int flowerCount = random.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.3));
+            int flowerCount = randomizer.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.3));
             for (int i = 0; i < flowerCount; i++) {
-                int row = random.nextInt(ROW_COUNT);
-                int col = random.nextInt(COL_COUNT);
+                int row = randomizer.nextInt(ROW_COUNT);
+                int col = randomizer.nextInt(COL_COUNT);
                 grid.put(row, col, flowerType);
             }
         }
 
-        if (random.nextInt(2) == 0) {
-            int animalRow = random.nextInt(ROW_COUNT - 2) + 1;
-            int animalCol = random.nextInt(COL_COUNT - 2) + 1;
-            String animalType = random.oneOf(Chars.ANIMAL_TYPES);
+        if (randomizer.nextInt(2) == 0) {
+            int animalRow = randomizer.nextInt(ROW_COUNT - 2) + 1;
+            int animalCol = randomizer.nextInt(COL_COUNT - 2) + 1;
+            String animalType = randomizer.oneOf(Chars.ANIMAL_TYPES);
             grid.put(animalRow, animalCol, animalType);
         }
 
@@ -187,9 +188,9 @@ public class MeadowBuilder {
 
     private List<String> chooseSomeRandomFlowerTypes() {
         List<String> flowerTypes = new ArrayList<String>();
-        int flowerTypeCount = random.nextInt(Chars.FLOWER_TYPES.size());
+        int flowerTypeCount = randomizer.nextInt(Chars.FLOWER_TYPES.size());
         while (flowerTypes.size() < flowerTypeCount) {
-            String flowerType = random.oneOf(Chars.FLOWER_TYPES);
+            String flowerType = randomizer.oneOf(Chars.FLOWER_TYPES);
             if (!flowerTypes.contains(flowerType)) {
                 flowerTypes.add(flowerType);
             }

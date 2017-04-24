@@ -3,6 +3,7 @@ package sondow.meadow;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Base64;
+import java.util.Random;
 
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
@@ -30,7 +31,7 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
     public Object handleRequest(Object input, Context context) {
         Configuration config = configure();
         Tweeter tweeter = new Tweeter(config);
-        MeadowBuilder builder = new MeadowBuilder();
+        MeadowBuilder builder = new MeadowBuilder(new Random());
         return tweeter.tweet(builder.build());
     }
 
