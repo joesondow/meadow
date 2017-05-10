@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>sondow</groupId>
   <artifactId>meadow</artifactId>
-  <version>2.2</version>
+  <version>2.2.1</version>
   <name>meadow</name>
   <description>Uses AWS Lambda to automate pretty emoji meadow tweets.</description>
   <dependencies>
@@ -11,11 +11,6 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-core</artifactId>
       <version>1.1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-kms</artifactId>
-      <version>1.11.122</version>
     </dependency>
     <dependency>
       <groupId>org.twitter4j</groupId>

@@ -1,13 +1,7 @@
 package sondow.meadow;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.Base64;
 import java.util.Random;
 
-import com.amazonaws.services.kms.AWSKMS;
-import com.amazonaws.services.kms.AWSKMSClientBuilder;
-import com.amazonaws.services.kms.model.DecryptRequest;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
@@ -51,28 +45,24 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
 
         ConfigurationBuilder cb = new ConfigurationBuilder();
 
-        // By default, assume sensitive env vars are encrypted with AWS KMS helpers. To use unencrypted sensitive
-        // env vars, add the encryption=off env var.
-        boolean encryptionOn = !"off".equals(System.getenv("encryption"));
-
         // If just one set of keys is provided in environment variables, use that key set.
-        String consumerKey = getEnvVar("twitter4j_oauth_consumerKey", encryptionOn);
-        String consumerSecret = getEnvVar("twitter4j_oauth_consumerSecret", encryptionOn);
-        String accessToken = getEnvVar("twitter4j_oauth_accessToken", encryptionOn);
-        String accessTokenSecret = getEnvVar("twitter4j_oauth_accessTokenSecret", encryptionOn);
+        String consumerKey = System.getenv("twitter4j_oauth_consumerKey");
+        String consumerSecret = System.getenv("twitter4j_oauth_consumerSecret");
+        String accessToken = System.getenv("twitter4j_oauth_accessToken");
+        String accessTokenSecret = System.getenv("twitter4j_oauth_accessTokenSecret");
 
         // Override with a specific account if available. This mechanism allows us to provide multiple key sets
         // in the AWS Lambda configuration, and switch which Twitter account to target by retyping just the
         // target Twitter account name in the configuration.
         String account = System.getenv("twitter_account");
         if (account != null) {
-            String specificConsumerKey = getEnvVar(account + "_twitter4j_oauth_consumerKey", encryptionOn);
+            String specificConsumerKey = System.getenv(account + "_twitter4j_oauth_consumerKey");
             consumerKey = (specificConsumerKey != null) ? specificConsumerKey : consumerKey;
-            String specificConsumerSecret = getEnvVar(account + "_twitter4j_oauth_consumerSecret", encryptionOn);
+            String specificConsumerSecret = System.getenv(account + "_twitter4j_oauth_consumerSecret");
             consumerSecret = (specificConsumerSecret != null) ? specificConsumerSecret : consumerSecret;
-            String specificAccessToken = getEnvVar(account + "_twitter4j_oauth_accessToken", encryptionOn);
+            String specificAccessToken = System.getenv(account + "_twitter4j_oauth_accessToken");
             accessToken = (specificAccessToken != null) ? specificAccessToken : accessToken;
-            String specificAccTokSecret = getEnvVar(account + "_twitter4j_oauth_accessTokenSecret", encryptionOn);
+            String specificAccTokSecret = System.getenv(account + "_twitter4j_oauth_accessTokenSecret");
             accessTokenSecret = (specificAccTokSecret != null) ? specificAccTokSecret : accessTokenSecret;
         }
         if (consumerKey != null) {
@@ -90,22 +80,6 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
         Configuration config = cb.setTrimUserEnabled(true).build();
 
         return config;
-    }
-
-    private String getEnvVar(String envVarKey, boolean decryptValue) {
-        String result = null;
-        final String rawValue = System.getenv(envVarKey);
-        if (decryptValue && rawValue != null) {
-            byte[] encryptedValue = Base64.getDecoder().decode(rawValue);
-            String region = System.getenv("AWS_DEFAULT_REGION");
-            AWSKMS client = AWSKMSClientBuilder.standard().withRegion(region).build();
-            DecryptRequest request = new DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptedValue));
-            ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
-            result = new String(plainTextKey.array(), Charset.forName("UTF-8"));
-        } else {
-            result = rawValue;
-        }
-        return result;
     }
 
     /**
