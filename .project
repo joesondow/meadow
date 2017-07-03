@@ -20,5 +20,6 @@
 		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.jdt.groovy.core.groovyNature</nature>
+		<nature>org.jspresso.contrib.sjsplugin.spock.nature</nature>
 	</natures>
 </projectDescription>
