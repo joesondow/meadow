@@ -1,5 +1,4 @@
 apply plugin: 'java'
-apply plugin: 'maven'
 
 group = 'sondow'
 version = '2.2.2'
