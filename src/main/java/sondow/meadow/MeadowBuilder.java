@@ -48,7 +48,8 @@ public class MeadowBuilder {
 
         List<Cell> path = new ArrayList<Cell>();
 
-        // Start on the right, because emoji animals face left. Don't start on the top or bottom row.
+        // Start on the right, because emoji animals face left. Don't start on the top or
+        // bottom row.
         int startCellRowIndex = randomizer.nextInt(ROW_COUNT - 2) + 1;
         int startCellColIndex = COL_COUNT - 1;
 
@@ -56,10 +57,12 @@ public class MeadowBuilder {
         Cell startCell = new Cell(startCellRowIndex, startCellColIndex, "");
         path.add(startCell);
 
-        // Next cell: Identify cells on four sides of cursor. These are candidates for next cell on the path.
+        // Next cell: Identify cells on four sides of cursor. These are candidates for next
+        // cell on the path.
         Cell cursor = startCell;
 
-        // For each candidate: If candidate has three grass cells around it, it's worthy of being on the path.
+        // For each candidate: If candidate has three grass cells around it, it's worthy of
+        // being on the path.
         boolean lookingForEndOfPath = true;
         int iterations = 0;
         while (lookingForEndOfPath && iterations < 100) {
@@ -70,7 +73,8 @@ public class MeadowBuilder {
                 List<Cell> neighborsOfCandidate = grid.getAllNeighborsOf(candidateCell);
                 List<Cell> neighborsOnPath = new ArrayList<Cell>();
                 for (Cell neighbor : neighborsOfCandidate) {
-                    // If candidate's neighbors are already on path, then candidate is not path-worthy.
+                    // If candidate's neighbors are already on path, then candidate is not
+                    // path-worthy.
                     if (path.contains(neighbor)) {
                         neighborsOnPath.add(neighbor);
                     }
@@ -79,9 +83,9 @@ public class MeadowBuilder {
                     if (neighborsOnPath.size() <= 1) {
                         worthyCandidates.add(candidateCell);
                     } else if (neighborsOnPath.size() == 2) {
-                        // If there are two neighbors on the path, then this cell is still worthy iff those
-                        // neighbors are adjacent to each other, indicating that they're both earlier cells on
-                        // the path.
+                        // If there are two neighbors on the path, then this cell is still
+                        // worthy iff those neighbors are adjacent to each other, indicating
+                        // that they're both earlier cells on the path.
                         Cell neighborA = neighborsOnPath.get(0);
                         Cell neighborB = neighborsOnPath.get(1);
                         if (grid.getOrthogonalNeighborsOf(neighborA).contains(neighborB)) {
@@ -168,17 +172,17 @@ public class MeadowBuilder {
         List<String> otherGrassTypes = new ArrayList<String>();
         int otherGrassTypeCount = randomizer.nextInt(Chars.GRASS_TYPE.size() - 1);
         while (otherGrassTypes.size() < otherGrassTypeCount) {
-            String otherGrassType = randomizer.oneOf(Chars.GRASS_TYPE);
-            if (!otherGrassType.equals(grid.getInit()) && !otherGrassTypes.contains(otherGrassType)) {
-                otherGrassTypes.add(otherGrassType);
+            String grassType = randomizer.oneOf(Chars.GRASS_TYPE);
+            if (!grassType.equals(grid.getInit()) && !otherGrassTypes.contains(grassType)) {
+                otherGrassTypes.add(grassType);
             }
         }
-        for (String grassType : otherGrassTypes) {
+        for (String grass : otherGrassTypes) {
             int otherGrassCount = randomizer.nextInt((int) Math.round(ROW_COUNT * COL_COUNT * 0.8));
             for (int i = 0; i < otherGrassCount; i++) {
                 int row = randomizer.nextInt(ROW_COUNT);
                 int col = randomizer.nextInt(COL_COUNT);
-                grid.put(row, col, grassType);
+                grid.put(row, col, grass);
             }
         }
 

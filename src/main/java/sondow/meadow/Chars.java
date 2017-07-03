@@ -12,9 +12,10 @@ import java.util.Map;
  */
 public class Chars {
     public static final List<String> GRASS_TYPE = Arrays.asList("🌱", "🌿", "☘️", "🍀");
-    public static final List<String> FLOWER_TYPES = Arrays.asList("🌼", "🌻", "🌸", "🌺", "🌷", "🍄");
-    public static final List<String> ANIMAL_TYPES = Arrays.asList("🐌", "🐇", "🐈", "🐀", "🐿️", "🐒", "🐁", "🐓", "🐢",
-            "🐍", "🐝", "🦋", "🦎");
+    public static final List<String> FLOWER_TYPES = Arrays.asList("🌼", "🌻", "🌸", "🌺", "🌷",
+            "🍄");
+    public static final List<String> ANIMAL_TYPES = Arrays.asList("🐌", "🐇", "🐈", "🐀", "🐿️",
+            "🐒", "🐁", "🐓", "🐢", "🐍", "🐝", "🦋", "🦎");
 
     @SuppressWarnings("serial")
     public static final Map<String, String> ANIMALS_TO_TREATS = new HashMap<String, String>() {

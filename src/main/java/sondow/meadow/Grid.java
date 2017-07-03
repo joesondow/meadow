@@ -18,7 +18,8 @@ public class Grid {
     }
 
     /**
-     * Creates a grid of cells based on the specified dimensions, with a starting value in every cell.
+     * Creates a grid of cells based on the specified dimensions, with a starting value in
+     * every cell.
      *
      * @param rows the number of rows the grid should have
      * @param cols the number of columns the grid should have

@@ -18,8 +18,8 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
     /*
      * (non-Javadoc)
      *
-     * @see com.amazonaws.services.lambda.runtime.RequestHandler#handleRequest(java. lang.Object,
-     * com.amazonaws.services.lambda.runtime.Context)
+     * @see com.amazonaws.services.lambda.runtime.RequestHandler#handleRequest(java.
+     * lang.Object, com.amazonaws.services.lambda.runtime.Context)
      */
     @Override
     public Object handleRequest(Object input, Context context) {
@@ -30,14 +30,15 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
     }
 
     /**
-     * AWS Lambda only allows underscores in environment variables, not dots, so the default ways twitter4j finds
-     * keys aren't possible. Instead, this custom code gets the configuration either from Lambda-friendly
-     * environment variables or else allows Twitter4J to look in its default locations like twitter4j.properties
-     * file at the project root, or on the classpath, or in WEB-INF.
+     * AWS Lambda only allows underscores in environment variables, not dots, so the default
+     * ways twitter4j finds keys aren't possible. Instead, this custom code gets the
+     * configuration either from Lambda-friendly environment variables or else allows
+     * Twitter4J to look in its default locations like twitter4j.properties file at the
+     * project root, or on the classpath, or in WEB-INF.
      *
-     * Twitter API keys are sensitive, so they should be encrypted with the AWS KMS console helper tools and
-     * decrypted here using KMS. If you choose to use environment variables without encryption, add the env var
-     * "encryption=off"
+     * Twitter API keys are sensitive, so they should be encrypted with the AWS KMS console
+     * helper tools and decrypted here using KMS. If you choose to use environment variables
+     * without encryption, add the env var "encryption=off"
      *
      * @return configuration containing Twitter authentication strings
      */
@@ -51,19 +52,19 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
         String accessToken = Environment.get("twitter4j_oauth_accessToken");
         String accessTokenSecret = Environment.get("twitter4j_oauth_accessTokenSecret");
 
-        // Override with a specific account if available. This mechanism allows us to provide multiple key sets
-        // in the AWS Lambda configuration, and switch which Twitter account to target by retyping just the
-        // target Twitter account name in the configuration.
+        // Override with a specific account if available. This mechanism allows us to provide
+        // multiple key sets in the AWS Lambda configuration, and switch which Twitter account
+        // to target by retyping just the target Twitter account name in the configuration.
         String account = Environment.get("twitter_account");
         if (account != null) {
             String specificConsumerKey = Environment.get(account + "_twitter4j_oauth_consumerKey");
             consumerKey = (specificConsumerKey != null) ? specificConsumerKey : consumerKey;
-            String specificConsumerSecret = Environment.get(account + "_twitter4j_oauth_consumerSecret");
-            consumerSecret = (specificConsumerSecret != null) ? specificConsumerSecret : consumerSecret;
+            String specificConSec = Environment.get(account + "_twitter4j_oauth_consumerSecret");
+            consumerSecret = (specificConSec != null) ? specificConSec : consumerSecret;
             String specificAccessToken = Environment.get(account + "_twitter4j_oauth_accessToken");
             accessToken = (specificAccessToken != null) ? specificAccessToken : accessToken;
-            String specificAccTokSecret = Environment.get(account + "_twitter4j_oauth_accessTokenSecret");
-            accessTokenSecret = (specificAccTokSecret != null) ? specificAccTokSecret : accessTokenSecret;
+            String specificAts = Environment.get(account + "_twitter4j_oauth_accessTokenSecret");
+            accessTokenSecret = (specificAts != null) ? specificAts : accessTokenSecret;
         }
         if (consumerKey != null) {
             cb.setOAuthConsumerKey(consumerKey);
@@ -83,9 +84,9 @@ public class LambdaRequestHandler implements RequestHandler<Object, Object> {
     }
 
     /**
-     * Local manual testing. This requires setting up all the necessary environment variables in your local dev
-     * environment for this execution. Note that Eclipse runtime configuration is separate from command line env
-     * var setup.
+     * Local manual testing. This requires setting up all the necessary environment variables
+     * in your local dev environment for this execution. Note that Eclipse runtime
+     * configuration is separate from command line env var setup.
      */
     public static void main(String[] args) {
         LambdaRequestHandler handler = new LambdaRequestHandler();
